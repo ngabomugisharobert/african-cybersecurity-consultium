@@ -19,7 +19,7 @@ from drf_yasg import openapi
 
 class AuthUserAPIView(GenericAPIView):
 
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = []
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
