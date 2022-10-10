@@ -6,6 +6,7 @@ from helpers.models import TrackingModel
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from decouple import config
 import jwt
 import os
 from datetime import datetime, timedelta
@@ -26,7 +27,6 @@ class MyUserManager(BaseUserManager):
         if not email:
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
-        role = self.normalize_role(role.lower())
         username = self.model.normalize_username(username)
         user = self.model(username=username, email=email,
                           role=role, ** extra_fields)
@@ -106,5 +106,5 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     @property
     def token(self):
         token = jwt.encode(
-            {'email': self.email, 'username': self.username, 'role': self.role, 'exp': datetime.utcnow() + timedelta(hours=24)}, os.environ.SECRET, algorithm='HS256')
+            {'email': self.email, 'username': self.username, 'role': self.role, 'exp': datetime.utcnow() + timedelta(hours=24)}, 'secret', algorithm='HS256')
         return token

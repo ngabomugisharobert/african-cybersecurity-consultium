@@ -1,7 +1,10 @@
 from rest_framework.authentication import get_authorization_header, BaseAuthentication, exceptions
-from django.conf import settings
 import jwt
 from authentication.models import User
+from pathlib import Path
+from decouple import config
+import os
+
 
 
 class JWTAuthentication(BaseAuthentication):
@@ -34,5 +37,5 @@ class JWTAuthentication(BaseAuthentication):
 
 @staticmethod
 def jwt_decoder(token):
-    payload = jwt.decode(token, settings.SECRET_KEY)
+    payload = jwt.decode(token, 'secret', algorithms='HS256')
     return payload

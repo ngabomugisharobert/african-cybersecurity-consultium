@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from .models import User
 from .utils import Util
+from decouple import config
 import jwt
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
