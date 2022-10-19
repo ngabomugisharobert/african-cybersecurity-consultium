@@ -6,6 +6,7 @@ import { loginUser } from '../services/api'
 import {
     SIGNIN,
     hasSignedIn,
+    failedToSignIn,
 } from '../actions'
 
 
@@ -16,11 +17,11 @@ function* signinSaga(payload) {
         if (response.status === 200) {
             yield put(hasSignedIn({ username: payload.data.username, password: payload.data.password }))
         } else {
-            console.log('error')
-        }
+            console.log('**error**')
+        } 
     } catch (e) {
-        // yield put(hasSignedIn({ username: payload.data.username, password: payload.data.password }))
-        console.log('error', e)
+        yield put(failedToSignIn({ username: payload.data.username, password: payload.data.password }))
+        console.log('error========', e)
     }
 
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
 // Chakra imports
 import { Link as ReachLink } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
@@ -30,7 +31,7 @@ function SignIn() {
     username: '',
     password: ''
   })
-
+  const toast = useToast()
   const [notificationMessage,
     setNotification] = useState()
 
@@ -43,32 +44,10 @@ function SignIn() {
     }
   })
 
-  useEffect(() => {
-    console.log('response', response)
-    if (response.status === 200) {
-      console.log('navigate to dashboard')
-      //navigate to dashboard
-      history.replace('/admin/dashboard')
-    } else {
-      console.log('error')
-    }
-  }, [response.status])
-
-  useEffect(() => {
-    console.log('location', location)
-    console.log('history', history)
-    //check if user is logged in
-    if (localStorage.getItem('token')) {
-      console.log('navigate to dashboard')
-
-    }
-  }, [])
-
-
 
 
   const handleSubmit = () => {
-    dispatch(signin({ username: user.username, password: user.password }))
+    const res = dispatch(signin({ username: user.username, password: user.password }))
     //navigate to dashboard
     // console.log('user', user)
     // window.location.href = '/admin/dashboard'
@@ -82,10 +61,37 @@ function SignIn() {
   const titleColor = useColorModeValue("teal.300", "teal.200");
   const textColor = useColorModeValue("gray.400", "white");
 
-  useEffect(() => {
-    console.log('SignIn useEffect')
-  }, [])
 
+  useEffect(() => {
+    console.log('response', response)
+    if (response.status === 200) {
+      console.log('navigate to dashboard')
+      //navigate to dashboard
+      history.replace('/admin/dashboard')
+    } else if (response.status === 400) {
+      console.log('error')
+      toast({
+        title: "Error",
+        description: "Invalid username or password",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+    else {
+      console.log('error')
+    }
+  }, [response.status])
+
+  useEffect(() => {
+    console.log('location', location)
+    console.log('history', history)
+    //check if user is logged in
+    if (localStorage.getItem('token')) {
+      console.log('navigate to dashboard')
+
+    }
+  }, [])
 
 
   return (

@@ -2,13 +2,21 @@ from rest_framework import serializers
 from authentication.models import User
 
 
+class AuthUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role',
+                  'first_name', 'last_name', 'email_verified', ]
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=24, min_length=6, write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'role']
+        fields = ['email', 'username', 'first_name',
+                  'last_name', 'password', 'role']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -29,7 +37,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'role', 'token']
+        fields = ['email', 'password', ]
         read_only_fields = ['token']
 
 #     def validate(self, attrs):

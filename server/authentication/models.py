@@ -6,15 +6,13 @@ from helpers.models import TrackingModel
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-from decouple import config
 import jwt
-import os
 from datetime import datetime, timedelta
 # Create your models here.
 
 
 class MyUserManager(BaseUserManager):
-    def _create_user(self, username, email, password, role="user", ** extra_fields):
+    def _create_user(self, username, first_name, last_name, email, password, role="user", ** extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -34,12 +32,13 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email, password, role, ** extra_fields):
+    def create_user(self, username, first_name, last_name, email, password, role, ** extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, email, password, role, **extra_fields)
+        extra_fields.setdefault('email_verified', False)
+        return self._create_user(username, first_name, last_name, email, password, role, **extra_fields)
 
-    def create_superuser(self, username, email, password, role="admin", ** extra_fields):
+    def create_superuser(self, username, first_name, last_name, email, password, role="admin", ** extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -48,7 +47,7 @@ class MyUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(username, email, password, role, ** extra_fields)
+        return self._create_user(username, first_name, last_name, email, password, role, ** extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
@@ -73,7 +72,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
                     "Reviewer", 'Implementer', 'Coordinator']
     role = models.CharField(
         max_length=25, choices=[(role, role) for role in role_choices], default="user")
-    email = models.EmailField(_('email address'), blank=False, unique=True)
+    email = models.EmailField(_('email address'), blank=True, unique=True)
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -106,5 +105,5 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     @property
     def token(self):
         token = jwt.encode(
-            {'email': self.email, 'username': self.username, 'role': self.role, 'exp': datetime.utcnow() + timedelta(hours=24)}, 'secret', algorithm='HS256')
+            {'email': self.email, 'username': self.username, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role, 'exp': datetime.utcnow() + timedelta(hours=24)}, 'secret', algorithm='HS256')
         return token

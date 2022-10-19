@@ -55,6 +55,7 @@ AUTH_USER_MODEL = 'authentication.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -67,7 +68,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'psycopg2',
     'drf_yasg',
-
+    'project',
 
 ]
 
@@ -95,7 +96,7 @@ ROOT_URLCONF = 'open_cyber_db_api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

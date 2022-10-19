@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
 from rest_framework import views
 from rest_framework.response import responses
-from authentication.serializers import EmailVerificationSerializer, RegisterSerializer, LoginSerializer
+from authentication.serializers import EmailVerificationSerializer, RegisterSerializer, LoginSerializer, AuthUserSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
@@ -20,6 +20,7 @@ from drf_yasg import openapi
 
 class AuthUserAPIView(GenericAPIView):
 
+    serializer_class = AuthUserSerializer
     authentication_classes = []
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -89,7 +90,9 @@ class VerifyEmail(views.APIView):
             if not user.email_verified:
                 user.email_verified = True
                 user.save()
-            return response.Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            # return a https page response in browser
+            return render(request, 'Email_verified.html')
+
         except jwt.ExpiredSignatureError as identifier:
             return response.Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
