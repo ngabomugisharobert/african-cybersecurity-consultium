@@ -1,1 +1,3 @@
 web: gunicorn CCMS.wsgi --log-file -
+web: pip install -r requirements.txt
+web: python manage.py runserver
