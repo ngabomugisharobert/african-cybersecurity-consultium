@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -51,9 +51,9 @@ urlpatterns = [
 
     # for Heroku
 
-    url(r'^media/(?P<path>.*)$', serve,
+    re_path(r'^media/(?P<path>.*)$', serve,
         {'document_root':       settings.MEDIA_ROOT}),
-    url(r'^static/(?P<path>.*)$', serve,
+    re_path(r'^static/(?P<path>.*)$', serve,
         {'document_root': settings.STATIC_ROOT}),
 
 ]
