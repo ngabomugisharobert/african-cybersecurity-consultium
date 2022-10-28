@@ -1,31 +1,30 @@
-from email.policy import default
-from django.db import models
-from helpers.models import TrackingModel
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin)
-
-# Create your models here.
+from enum import unique
+from authentication.models import *
 
 
-class Project(TrackingModel):
-    proj_owner = models.CharField(max_length=200, default='')
-    proj_name = models.CharField(max_length=100)
-    proj_desc = models.TextField()
-    proj_file = models.ImageField(upload_to='projects/')
-    proj_url = models.URLField(max_length=200)
-    proj_date = models.DateTimeField(auto_now_add=True)
-    proj_type = models.CharField(max_length=100)
-    proj_manager = models.ForeignKey(
-        'authentication.User', on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='project_manager')
-    proj_implementor = models.ForeignKey(
-        'authentication.User', on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='implementor')
-    proj_coordinator = models.ForeignKey(
-        'authentication.User', on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='coordinator')
-    #proj_comments which can be null and blank
-    proj_comments = models.TextField(null=True, blank=True)
-    proj_status = models.CharField(max_length=100)
-
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'role']
+class Project(models.Model):
+    owner = models.ForeignKey(ProjectOwner, on_delete=models.CASCADE)
+    # developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
+    # coardinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE)
+    # reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE)
+    # manager = models.ForeignKey(Manager, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+    expected_deliverables = models.TextField()
+    technologies_to_used = models.TextField()
+    is_completed = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=True)
+    file = models.FileField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.title
+
+
+class Opportunities(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    file = models.FileField(blank=True, null=True)
+    is_public = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title

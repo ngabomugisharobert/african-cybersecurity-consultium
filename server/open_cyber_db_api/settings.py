@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     'psycopg2',
     'drf_yasg',
     'project',
-
 ]
 
 MIDDLEWARE = [

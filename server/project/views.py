@@ -1,39 +1,223 @@
 from django.shortcuts import render
+
+from authentication.models import Coordinator, ProjectOwner
+from .serializers import ProjectSerializer, OpportunitySerializer
+from .models import Opportunities, Project
 from rest_framework import response, status, permissions
-from rest_framework.generics import GenericAPIView, CreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from project.serializers import ProjectSerializer
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 # Create your views here.
 
 
-class CreateProjectView(CreateAPIView):
+class RecordProjectApiView(CreateAPIView):
+
     serializer_class = ProjectSerializer
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
-        project = request.data
-        serializer = self.serializer_class(data=project)
-        if serializer.is_valid():
-            serializer.save()
-            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
-        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        project_owner = ProjectOwner.objects.get(
+            project_owner=self.request.user.id)
+        if project_owner:
+            if serializer.is_valid():
+                serializer.save(owner=project_owner)
+                return response.Response({"project": "Project recorded successfully"}, status=status.HTTP_201_CREATED)
+            return response.Response({"error": "Wrong inputs"}, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response({"error": "User role should be a project owner"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetAllProjects(ListAPIView):
+# View to list all public pending projects
+
+
+class Public_Pending_ProjectListApiView(ListAPIView):
     serializer_class = ProjectSerializer
 
-    def get(self, request):
-        projects = Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
-        return response(serializer.data)
+    def get_queryset(self):
+        return Project.objects.filter(is_completed=False).filter(is_public=True)
+
+# View to list all private pending projects
 
 
-class GetOneProject(GenericAPIView):
-    authentication_classes = []
+class Private_Pending_ProjectListApiView(ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Project.objects.filter(is_completed=False).filter(is_public=False)
+
+
+# View to list all public completed projects
+class Public_Completed_ProjectListApiView(ListAPIView):
     serializer_class = ProjectSerializer
 
-    def get(self, request, pk):
-        project = Project.objects.get(proj_name=pk)
-        serializer = ProjectSerializer(project, many=False)
-        return response(serializer.data)
+    def get_queryset(self):
+        return Project.objects.filter(is_completed=True).filter(is_public=True)
+
+# View to list all private completed projects
+
+
+class Private_Completed_ProjectListApiView(ListAPIView):
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Project.objects.filter(is_completed=True).filter(is_public=False)
+
+
+# View to List all the public pending projects for the current login projectOwner
+class ProjectOwnerPublicPendingProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_completed=False).filter(is_public=True)
+
+
+# View to List all the public completed projects for the current login projectOwner
+class ProjectOwnerPublicCompletedProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_completed=True).filter(is_public=True)
+
+
+# View to List all the private pending projects for the current login projectOwner
+
+class ProjectOwnerPrivatePendingProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_completed=False).filter(is_public=False)
+
+
+# View to List all the private completed projects for the current login projectOwner
+
+class ProjectOwnerPrivateCompletedProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_completed=True).filter(is_public=False)
+
+
+# View to List all the private  projects for the current login projectOwner
+
+class ProjectOwnerPrivateProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_public=False)
+
+# View to List all the public projects for the current login projectOwner
+
+
+class ProjectOwnerPublicProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_public=True)
+
+
+# View to List all the completed projects for the current login projectOwner
+
+class ProjectOwnerCompletedProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_completed=True)
+
+
+# View to List all the pending projects for the current login projectOwner
+
+class ProjectOwnerPendingProjectsApiView(ListAPIView):
+
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user.id
+        project_owner = ProjectOwner.objects.get(project_owner=user)
+
+        return Project.objects.filter(owner=project_owner).filter(is_completed=False)
+
+# View to List the project detail
+
+
+class ProjectDetailApiView(RetrieveUpdateDestroyAPIView):
+
+    serializer_class = ProjectSerializer
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        lookup_field = 'id'
+        return Project.objects.filter(id=lookup_field)
+
+
+# View to record opportunity
+
+
+class RecordOpportunity(CreateAPIView):
+    serializer_class = OpportunitySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        coardinator = Coordinator.objects.get(
+            coardinator=self.request.user.id)
+        if coardinator:
+            if serializer.is_valid():
+                serializer.save()
+                return response.Response({"Opportunity": "Opportunity recorded successfully"}, status=status.HTTP_201_CREATED)
+            return response.Response({"error": "Wrong inputs"}, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response({"error": "User role should be a coardinator"}, status=status.HTTP_400_BAD_REQUEST)
+
+# View to list all public opportunities
+
+
+class PublicOpportunitiesListAPIView(ListAPIView):
+    serializer_class = OpportunitySerializer
+
+    def get_queryset(self):
+        return Opportunities.objects.filter(is_public=True)
+
+# Views to list all private opportunities
+
+
+class PrivateOpportunitiesListAPIView(ListAPIView):
+    serializer_class = OpportunitySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Opportunities.objects.filter(is_public=False)

@@ -2,6 +2,7 @@ from enum import unique
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from django.db import models
+from django.conf import settings
 from helpers.models import TrackingModel
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
@@ -29,6 +30,8 @@ class MyUserManager(BaseUserManager):
         user = self.model(username=username, email=email,
                           role=role, ** extra_fields)
         user.set_password(password)
+        user.set_first_name(first_name)
+        user.set_last_name(last_name)
         user.save(using=self._db)
         return user
 
@@ -107,3 +110,29 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         token = jwt.encode(
             {'email': self.email, 'username': self.username, 'first_name': self.first_name, 'last_name': self.last_name, 'role': self.role, 'exp': datetime.utcnow() + timedelta(hours=24)}, 'secret', algorithm='HS256')
         return token
+
+
+class ProjectOwner(models.Model):
+    project_owner = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
+    company_name = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return self.project_owner.first_name + self.project_owner.last_name
+
+
+class Reviewer(models.Model):
+    reviewer = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
+
+class Manager(models.Model):
+    manager = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
+
+class Coordinator(models.Model):
+    coordinator = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
