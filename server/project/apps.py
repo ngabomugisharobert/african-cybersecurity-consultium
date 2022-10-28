@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class VirtcareerConfig(AppConfig):
+class ProjectConfig(AppConfig):
     name = 'project'
