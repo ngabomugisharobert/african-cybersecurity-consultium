@@ -1,6 +1,6 @@
 asgiref==3.5.2
 autopep8==1.7.0
-backports.zoneinfo==0.2.1;python_version<"3.9"
+backports.zoneinfo==0.2.1
 certifi==2022.9.24
 charset-normalizer==2.1.1
 colorama==0.4.5
@@ -37,3 +37,4 @@ toml==0.10.2
 tzdata==2022.4
 uritemplate==4.1.1
 urllib3==1.26.12
+whitenoise==6.2.0
