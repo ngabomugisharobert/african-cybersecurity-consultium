@@ -44,13 +44,10 @@ urlpatterns = [
 
     path('personal_pending_projects', views.ProjectOwnerPendingProjectsApiView.as_view(
     ), name='personal_pending_projects'),
-
-
-
-
-
-    path('project_detail/<int:id>',
-         views.ProjectDetailApiView.as_view(), name="project_detail"),
+    
+    
+    path('project_detail/<int:pk>',
+         views.project_detail, name="project_detail"),
 
 
 ]

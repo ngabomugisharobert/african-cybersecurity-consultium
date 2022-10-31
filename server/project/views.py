@@ -9,6 +9,9 @@ from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIVie
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.decorators import api_view
 
 class RecordProjectApiView(CreateAPIView):
 
@@ -176,35 +179,28 @@ class ProjectOwnerPendingProjectsApiView(ListAPIView):
 # View to List the project detail
 
 
-class ProjectDetailApiView(RetrieveUpdateDestroyAPIView):
+# class ProjectDetailApiView(RetrieveUpdateDestroyAPIView):
 
-    serializer_class = ProjectSerializer
-    # permission_classes = (IsAuthenticated,)
+#     serializer_class = ProjectSerializer
+#     # permission_classes = (IsAuthenticated,)
+    
+#     def get_queryset(self):
+#         lookup_field = 'id'
+#         print("$$$$$$$$$$$$$$$$$$$$$")
+#         print(lookup_field)
+#         return ClientProject.objects.get(id=lookup_field)
 
-    def get_object(self):
-        """
-        Returns the object the view is displaying.
 
-        You may want to override this if you need to provide non-standard
-        queryset lookups.  Eg if objects are referenced using multiple
-        keyword arguments in the url conf.
-        """
-        queryset = self.filter_queryset(self.get_queryset())
 
-        # Perform the lookup filtering.
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+@api_view(['GET'])
+def project_detail(request, pk):
+    try:
+        if request.method == 'GET':
+       
+            projects = ClientProject.objects.get(id=pk)
+            serializer = ProjectSerializer(projects, many=False)
+            return response.Response(serializer.data)
+    except ClientProject.DoesNotExist:
+        return response.Response(status=status.HTTP_404_NOT_FOUND)
 
-        assert lookup_url_kwarg in self.kwargs, (
-            'Expected view %s to be called with a URL keyword argument '
-            'named "%s". Fix your URL conf, or set the `.lookup_field` '
-            'attribute on the view correctly.' %
-            (self.__class__.__name__, lookup_url_kwarg)
-        )
 
-        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
-        obj = get_object_or_404(queryset, **filter_kwargs)
-
-        # May raise a permission denied
-        self.check_object_permissions(self.request, obj)
-
-        return obj

@@ -78,7 +78,7 @@ class VerifyEmail(views.APIView):
     authentication_classes = []
 
     token_param_config = openapi.Parameter(
-        'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+        'token', in_=openapi.IN_QUERY, id='id', type=openapi.TYPE_STRING)
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
