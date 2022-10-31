@@ -2,7 +2,6 @@ import email
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
 from rest_framework import views
-from rest_framework.response import responses
 from authentication.serializers import EmailVerificationSerializer, RegisterSerializer, LoginSerializer, AuthUserSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate

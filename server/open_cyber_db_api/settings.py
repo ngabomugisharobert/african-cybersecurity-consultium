@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'psycopg2',
     'drf_yasg',
-    'project',
+    'project.apps.ProjectConfig',
 ]
 
 
@@ -118,9 +118,9 @@ WSGI_APPLICATION = 'open_cyber_db_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ttgoiesx',
-        'USER': 'ttgoiesx',
-        'PASSWORD': 'rEL4Y7IK458osrXsyA4ghnLtNhBXjwOh',
+        'NAME': 'yixcnoev',
+        'USER': 'yixcnoev',
+        'PASSWORD': 'vc3oAcnfFVflY8O0gsqvi-aYW6TLu614',
         'HOST': 'mouse.db.elephantsql.com',
         'PORT': '5432',
 

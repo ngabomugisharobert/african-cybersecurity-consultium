@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 
 class MyUserManager(BaseUserManager):
-    def _create_user(self, username, first_name, last_name, email, password, role="user", ** extra_fields):
+    def _create_user(self, username, first_name, last_name, email, password, role="owner", ** extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -21,17 +21,17 @@ class MyUserManager(BaseUserManager):
             raise ValueError('The given username must be set')
 
         if not role:
-            role = "user"
+            role = "owner"
 
         if not email:
             raise ValueError('The given email must be set')
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email,
-                          role=role, ** extra_fields)
+        user = self.model(username=username, email=email, first_name=first_name,
+                          last_name=last_name, role=role, **extra_fields)
+
         user.set_password(password)
-        user.set_first_name(first_name)
-        user.set_last_name(last_name)
+
         user.save(using=self._db)
         return user
 
@@ -71,10 +71,10 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     first_name = models.CharField(_('first name'), max_length=150, blank=False)
     last_name = models.CharField(_('last name'), max_length=150, blank=False)
     ## define the list of possible roles
-    role_choices = ["user", "admin", "Manager",
-                    "Reviewer", 'Implementer', 'Coordinator']
+    role_choices = ["project_owner", "admin", "manager",
+                    "reviewer", 'implementer', 'coordinator']
     role = models.CharField(
-        max_length=25, choices=[(role, role) for role in role_choices], default="user")
+        max_length=25, choices=[(role, role) for role in role_choices], default="project_owner")
     email = models.EmailField(_('email address'), blank=True, unique=True)
     is_staff = models.BooleanField(
         _('staff status'),
@@ -116,9 +116,6 @@ class ProjectOwner(models.Model):
     project_owner = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
 
-    company_name = models.CharField(max_length=255, blank=True)
-    location = models.CharField(max_length=255, blank=True)
-
     def __str__(self):
         return self.project_owner.first_name + self.project_owner.last_name
 
@@ -135,4 +132,9 @@ class Manager(models.Model):
 
 class Coordinator(models.Model):
     coordinator = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+
+
+class Implementer(models.Model):
+    implementer = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)

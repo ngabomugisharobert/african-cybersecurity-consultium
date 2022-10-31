@@ -52,16 +52,5 @@ urlpatterns = [
     path('project_detail/<int:id>',
          views.ProjectDetailApiView.as_view(), name="project_detail"),
 
-    # Opportunity urls
-
-    path('record_opportunity', views.RecordOpportunity.as_view(),
-         name="record_opportunity"),
-    path('public_opportunities', views.PublicOpportunitiesListAPIView.as_view(
-    ), name='public_opportunities'),
-    path('private_opportunities', views.PrivateOpportunitiesListAPIView.as_view(
-    ), name='private_opportunities'),
-
-
-
 
 ]
