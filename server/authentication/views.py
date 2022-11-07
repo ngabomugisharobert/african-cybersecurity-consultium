@@ -1,6 +1,6 @@
 import email
 from django.shortcuts import render
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework import views
 from authentication.serializers import EmailVerificationSerializer, RegisterSerializer, LoginSerializer, AuthUserSerializer
 from rest_framework import response, status, permissions
@@ -96,3 +96,15 @@ class VerifyEmail(views.APIView):
             return response.Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return response.Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetUsers(ListAPIView):
+    serializer_class = AuthUserSerializer
+
+    def get_queryset(self):
+        return User.objects
+
+class GetImplementers(ListAPIView):
+    serializer_class = AuthUserSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(role='implementer');

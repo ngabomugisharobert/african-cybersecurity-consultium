@@ -1,5 +1,4 @@
 from enum import unique
-from tkinter import Variable
 from authentication.models import *
 
 
